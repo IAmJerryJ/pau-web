@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import Navbar from "@/components/Navbar";
 
@@ -8,7 +10,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
         <div className="sticky top-0 z-50">
           <Navbar />
         </div>
-        <div className="pb-20">{children}</div>
+        <div className="-mt-24">{children}</div>
       </div>
     </main>
   );

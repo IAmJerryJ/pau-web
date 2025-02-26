@@ -1,0 +1,147 @@
+.servicesContainer {
+  width: 100%;
+  min-height: 80vh;
+}
+
+.heroSection {
+  position: relative;
+  height: 80vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-image: url('/ServicesBackground.jpg');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  z-index: 1;
+}
+
+.heroSection::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 30, 0.6); /* 半透明黑色遮罩 */
+  z-index: 1;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  width: 90%;
+  max-width: 1200px;
+  color: white;
+  gap: 10rem;
+}
+
+.servicesList {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.servicesHeader {
+  margin-bottom: 0rem;
+}
+
+.servicesTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0rem;
+  position: relative;
+  display: inline-block;
+}
+
+.servicesSubtitle {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 90%;
+}
+
+.serviceItem {
+  background-color: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(5px);
+  padding: 1.5rem;
+  border-radius: 8px;
+  border-left: 4px solid #fff;
+  transition: all 0.3s ease;
+}
+
+.serviceItem:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: translateX(5px);
+}
+
+.serviceItem h3 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+}
+
+.serviceItem p {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.heroMessage {
+  flex: 1.2;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.mainTitle {
+  font-size: 2.5rem;
+  font-weight: 700;
+  line-height: 1.3;
+  margin-bottom: 2rem;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.learnMoreBtn {
+  align-self: flex-start;
+  background-color: white;
+  color: #333;
+  border: none;
+  padding: 0.8rem 2rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  letter-spacing: 1px;
+}
+
+.learnMoreBtn:hover {
+  background-color: rgba(255, 255, 255, 0.9);
+  transform: translateY(-3px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .heroContent {
+    flex-direction: column;
+    gap: 2rem;
+  }
+  
+  .mainTitle {
+    font-size: 2rem;
+  }
+  
+  .servicesTitle {
+    font-size: 1.8rem;
+  }
+  
+  .servicesSubtitle {
+    font-size: 1rem;
+    max-width: 100%;
+  }
+} 
