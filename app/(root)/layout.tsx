@@ -2,7 +2,7 @@
 
 import React from "react";
 import Navbar from "@/components/Navbar";
-
+import Footer from "@/components/Footer";
 const Layout = ({ children }: { children: React.ReactNode }) => {
   return (
     <main className="root-container">
@@ -11,6 +11,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
           <Navbar />
         </div>
         <div className="-mt-24">{children}</div>
+        <Footer />
       </div>
     </main>
   );
