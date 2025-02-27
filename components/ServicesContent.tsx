@@ -7,6 +7,8 @@ import { cn } from "@/lib/utils";
 import Image from "next/image";
 import ServicesBanner from "@/components/ServicesBanner";
 import Footer from "@/components/Footer";
+import GlobalPartner from "@/components/GlobalPartner";
+import RepairService from "@/components/RepairService";
 
 // 服务内容数据
 interface ServiceData {
@@ -18,6 +20,7 @@ interface ServiceData {
   component?: React.ReactNode;
   isFullBanner?: boolean;
   isContactSection?: boolean;
+  isFullComponent?: boolean;
 }
 
 const servicesData: ServiceData[] = [
@@ -28,17 +31,10 @@ const servicesData: ServiceData[] = [
     isFullBanner: true,
   },
   {
-    id: "service-1",
-    title: "Repair",
-    description:
-      "We provide professional repair services for all types of equipment, ensuring your devices are in top condition.",
-    image: "/services/service1.jpg",
-    features: [
-      "Advanced repair facilities",
-      "Strict quality control processes",
-      "Flexible production scale",
-      "Fast delivery times",
-    ],
+    id: "repair-service",
+    title: "Repair Services",
+    component: <RepairService />,
+    isFullComponent: true,
   },
   {
     id: "service-2",
@@ -107,6 +103,100 @@ const ServicesContent = () => {
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
+  // 确保TabsContent内容始终可见
+  useEffect(() => {
+    console.log("activeTab changed:", activeTab);
+
+    // 直接操作DOM，确保当前活动标签的内容可见
+    servicesData.forEach((service) => {
+      // 获取内容元素
+      const contentElement = document.getElementById(`content-${service.id}`);
+      if (!contentElement) {
+        console.log(`Content not found: content-${service.id}`);
+        return;
+      }
+
+      // 设置显示状态
+      if (service.id === activeTab) {
+        console.log(`Show content: ${service.id}`);
+        contentElement.style.display = "block";
+        contentElement.style.opacity = "1";
+
+        // 确保内容在DOM中可见
+        setTimeout(() => {
+          // 强制重绘
+          contentElement.style.display = "none";
+          // 在下一个微任务中恢复显示
+          setTimeout(() => {
+            contentElement.style.display = "block";
+            console.log(
+              `Content ${service.id} has been repainted and displayed`
+            );
+          }, 0);
+        }, 5);
+      } else {
+        console.log(`Hide content: ${service.id}`);
+        contentElement.style.display = "none";
+        contentElement.style.opacity = "0";
+      }
+    });
+  }, [activeTab, servicesData]);
+
+  // 在组件挂载时初始化所有TabsContent
+  useEffect(() => {
+    console.log("初始化所有TabsContent");
+
+    // 确保所有TabsContent都已创建
+    const initializeTabsContent = () => {
+      servicesData.forEach((service, index) => {
+        // 创建或获取内容容器
+        let contentElement = document.getElementById(`content-${service.id}`);
+
+        if (!contentElement) {
+          console.log(`Create content element: content-${service.id}`);
+
+          // 如果内容元素不存在，创建一个
+          contentElement = document.createElement("div");
+          contentElement.id = `content-${service.id}`;
+          contentElement.className = "m-0 p-0 w-full h-full";
+          contentElement.setAttribute("role", "tabpanel");
+          contentElement.setAttribute(
+            "data-state",
+            service.id === activeTab ? "active" : "inactive"
+          );
+          contentElement.setAttribute("data-orientation", "vertical");
+
+          // 设置样式
+          contentElement.style.display =
+            service.id === activeTab ? "block" : "none";
+          contentElement.style.opacity = service.id === activeTab ? "1" : "0";
+          contentElement.style.transition = "opacity 0.5s ease-in-out";
+
+          // 获取section元素并添加内容
+          const sectionElement = sectionsRef.current[index];
+          if (sectionElement) {
+            sectionElement.appendChild(contentElement);
+          }
+        } else {
+          console.log(`Content element already exists: content-${service.id}`);
+
+          // 更新现有元素的状态
+          contentElement.setAttribute(
+            "data-state",
+            service.id === activeTab ? "active" : "inactive"
+          );
+          contentElement.style.display =
+            service.id === activeTab ? "block" : "none";
+          contentElement.style.opacity = service.id === activeTab ? "1" : "0";
+          contentElement.style.transition = "opacity 0.5s ease-in-out";
+        }
+      });
+    };
+
+    // 在DOM更新后执行初始化
+    setTimeout(initializeTabsContent, 100);
+  }, [servicesData, activeTab]);
+
   // 处理滚动事件，包括滚动条拖动
   useEffect(() => {
     const handleScroll = () => {
@@ -119,6 +209,10 @@ const ServicesContent = () => {
       if (Math.abs(scrollDelta) < 10) return;
 
       setIsScrolling(true);
+      console.log(
+        "Scroll event triggered, direction:",
+        scrollDelta > 0 ? "down" : "up"
+      );
 
       // 确定滚动方向
       const isScrollingDown = scrollDelta > 0;
@@ -126,6 +220,12 @@ const ServicesContent = () => {
       // 获取当前活动标签的索引
       const currentIndex = servicesData.findIndex(
         (service) => service.id === activeTab
+      );
+      console.log(
+        "Current active tab index:",
+        currentIndex,
+        "Tab ID:",
+        activeTab
       );
 
       // 计算目标索引
@@ -137,32 +237,83 @@ const ServicesContent = () => {
         // 向上滚动
         targetIndex = currentIndex - 1;
       }
+      console.log(
+        "Target tab index:",
+        targetIndex,
+        "Tab ID:",
+        servicesData[targetIndex]?.id
+      );
 
       // 如果目标索引与当前索引不同，则滚动到目标区域
       if (targetIndex !== currentIndex) {
         const targetSection = sectionsRef.current[targetIndex];
         if (targetSection) {
-          window.scrollTo({
-            top: targetSection.offsetTop,
-            behavior: "smooth",
-          });
+          console.log(
+            "Preparing to scroll to target section:",
+            servicesData[targetIndex].id
+          );
 
-          setActiveTab(servicesData[targetIndex].id);
+          // 先淡出当前内容
+          const currentContent = document.getElementById(
+            `content-${activeTab}`
+          );
+          if (currentContent) {
+            currentContent.style.opacity = "0";
+            currentContent.style.transition = "opacity 0.3s ease-out";
+          }
+
+          // 延迟更新活动标签，等待淡出动画完成
+          setTimeout(() => {
+            // 更新活动标签
+            setActiveTab(servicesData[targetIndex].id);
+
+            // 确保内容可见
+            servicesData.forEach((service, idx) => {
+              const content = document.getElementById(`content-${service.id}`);
+              if (content) {
+                if (idx === targetIndex) {
+                  content.style.display = "block";
+                  // 使用setTimeout确保display更新后再设置opacity
+                  setTimeout(() => {
+                    content.style.opacity = "1";
+                    content.style.transition = "opacity 0.5s ease-in";
+                  }, 10);
+                } else {
+                  // 延迟隐藏其他内容，等待淡出完成
+                  setTimeout(() => {
+                    content.style.display = "none";
+                  }, 300);
+                }
+              }
+            });
+
+            // 滚动到目标位置
+            window.scrollTo({
+              top: targetSection.offsetTop,
+              behavior: "smooth",
+            });
+
+            // 更新最后滚动位置
+            setLastScrollY(targetSection.offsetTop);
+
+            // 滚动完成后重置状态
+            setTimeout(() => {
+              console.log("Scroll completed, resetting isScrolling");
+              setIsScrolling(false);
+            }, 800);
+          }, 300); // 等待淡出动画完成
         }
-      }
-
-      // 更新最后滚动位置
-      setLastScrollY(currentScrollY);
-
-      // 滚动完成后重置状态
-      setTimeout(() => {
+      } else {
+        console.log(
+          "Target index is the same as the current index, no scrolling"
+        );
         setIsScrolling(false);
-      }, 800);
+      }
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [activeTab, isScrolling, lastScrollY]);
+  }, [activeTab, isScrolling, lastScrollY, servicesData]);
 
   // 处理鼠标滚轮事件，任何滚动都会切换 section
   useEffect(() => {
@@ -195,22 +346,58 @@ const ServicesContent = () => {
       if (targetIndex !== currentIndex) {
         const targetSection = sectionsRef.current[targetIndex];
         if (targetSection) {
-          window.scrollTo({
-            top: targetSection.offsetTop,
-            behavior: "smooth",
-          });
+          // 先淡出当前内容
+          const currentContent = document.getElementById(
+            `content-${activeTab}`
+          );
+          if (currentContent) {
+            currentContent.style.opacity = "0";
+            currentContent.style.transition = "opacity 0.3s ease-out";
+          }
 
-          setActiveTab(servicesData[targetIndex].id);
+          // 延迟更新活动标签，等待淡出动画完成
+          setTimeout(() => {
+            // 更新活动标签
+            setActiveTab(servicesData[targetIndex].id);
+
+            // 确保内容可见
+            servicesData.forEach((service, idx) => {
+              const content = document.getElementById(`content-${service.id}`);
+              if (content) {
+                if (idx === targetIndex) {
+                  content.style.display = "block";
+                  // 使用setTimeout确保display更新后再设置opacity
+                  setTimeout(() => {
+                    content.style.opacity = "1";
+                    content.style.transition = "opacity 0.5s ease-in";
+                  }, 10);
+                } else {
+                  // 延迟隐藏其他内容，等待淡出完成
+                  setTimeout(() => {
+                    content.style.display = "none";
+                  }, 300);
+                }
+              }
+            });
+
+            // 滚动到目标位置
+            window.scrollTo({
+              top: targetSection.offsetTop,
+              behavior: "smooth",
+            });
+
+            // 更新最后滚动位置
+            setLastScrollY(targetSection.offsetTop);
+
+            // 滚动完成后重置状态
+            setTimeout(() => {
+              setIsScrolling(false);
+            }, 800);
+          }, 300); // 等待淡出动画完成
         }
-      }
-
-      // 更新最后滚动位置
-      setLastScrollY(window.scrollY);
-
-      // 滚动完成后重置状态
-      setTimeout(() => {
+      } else {
         setIsScrolling(false);
-      }, 800);
+      }
     };
 
     // 添加事件监听器，阻止默认滚动
@@ -219,7 +406,7 @@ const ServicesContent = () => {
     return () => {
       window.removeEventListener("wheel", handleWheel);
     };
-  }, [activeTab, isScrolling]);
+  }, [activeTab, isScrolling, lastScrollY, servicesData]);
 
   // 处理触摸滑动事件（移动设备）
   useEffect(() => {
@@ -264,22 +451,58 @@ const ServicesContent = () => {
 
         const targetSection = sectionsRef.current[targetIndex];
         if (targetSection) {
-          window.scrollTo({
-            top: targetSection.offsetTop,
-            behavior: "smooth",
-          });
+          // 先淡出当前内容
+          const currentContent = document.getElementById(
+            `content-${activeTab}`
+          );
+          if (currentContent) {
+            currentContent.style.opacity = "0";
+            currentContent.style.transition = "opacity 0.3s ease-out";
+          }
 
-          setActiveTab(servicesData[targetIndex].id);
+          // 延迟更新活动标签，等待淡出动画完成
+          setTimeout(() => {
+            // 更新活动标签
+            setActiveTab(servicesData[targetIndex].id);
+
+            // 确保内容可见
+            servicesData.forEach((service, idx) => {
+              const content = document.getElementById(`content-${service.id}`);
+              if (content) {
+                if (idx === targetIndex) {
+                  content.style.display = "block";
+                  // 使用setTimeout确保display更新后再设置opacity
+                  setTimeout(() => {
+                    content.style.opacity = "1";
+                    content.style.transition = "opacity 0.5s ease-in";
+                  }, 10);
+                } else {
+                  // 延迟隐藏其他内容，等待淡出完成
+                  setTimeout(() => {
+                    content.style.display = "none";
+                  }, 300);
+                }
+              }
+            });
+
+            // 滚动到目标位置
+            window.scrollTo({
+              top: targetSection.offsetTop,
+              behavior: "smooth",
+            });
+
+            // 更新最后滚动位置
+            setLastScrollY(targetSection.offsetTop);
+
+            // 滚动完成后重置状态
+            setTimeout(() => {
+              setIsScrolling(false);
+            }, 800);
+          }, 300); // 等待淡出动画完成
         }
-      }
-
-      // 更新最后滚动位置
-      setLastScrollY(window.scrollY);
-
-      // 滚动完成后重置状态
-      setTimeout(() => {
+      } else {
         setIsScrolling(false);
-      }, 800);
+      }
 
       // 重置触摸起始位置
       touchStartY = touchY;
@@ -292,7 +515,7 @@ const ServicesContent = () => {
       window.removeEventListener("touchstart", handleTouchStart);
       window.removeEventListener("touchmove", handleTouchMove);
     };
-  }, [activeTab, isScrolling]);
+  }, [activeTab, isScrolling, lastScrollY, servicesData]);
 
   // 点击标签时滚动到对应部分
   const scrollToSection = (id: string) => {
@@ -301,20 +524,55 @@ const ServicesContent = () => {
     const index = servicesData.findIndex((service) => service.id === id);
     if (index !== -1 && sectionsRef.current[index]) {
       setIsScrolling(true);
-      setActiveTab(id);
 
-      window.scrollTo({
-        top: sectionsRef.current[index]?.offsetTop || 0,
-        behavior: "smooth",
-      });
+      // 先淡出当前内容
+      const currentContent = document.getElementById(`content-${activeTab}`);
+      if (currentContent) {
+        currentContent.style.opacity = "0";
+        currentContent.style.transition = "opacity 0.3s ease-out";
+      }
 
-      // 更新最后滚动位置
-      setLastScrollY(sectionsRef.current[index]?.offsetTop || 0);
-
-      // 滚动完成后重置滚动状态
+      // 延迟更新活动标签，等待淡出动画完成
       setTimeout(() => {
-        setIsScrolling(false);
-      }, 800);
+        // 更新活动标签
+        setActiveTab(id);
+
+        // 确保内容可见
+        servicesData.forEach((service, idx) => {
+          const content = document.getElementById(`content-${service.id}`);
+          if (content) {
+            if (idx === index) {
+              content.style.display = "block";
+              // 使用setTimeout确保display更新后再设置opacity
+              setTimeout(() => {
+                content.style.opacity = "1";
+                content.style.transition = "opacity 0.5s ease-in";
+              }, 10);
+            } else {
+              // 延迟隐藏其他内容，等待淡出完成
+              setTimeout(() => {
+                content.style.display = "none";
+              }, 300);
+            }
+          }
+        });
+
+        // 确保在下一个渲染周期执行滚动
+        setTimeout(() => {
+          window.scrollTo({
+            top: sectionsRef.current[index]?.offsetTop || 0,
+            behavior: "smooth",
+          });
+
+          // 更新最后滚动位置
+          setLastScrollY(sectionsRef.current[index]?.offsetTop || 0);
+
+          // 滚动完成后重置滚动状态
+          setTimeout(() => {
+            setIsScrolling(false);
+          }, 800);
+        }, 10);
+      }, 300); // 等待淡出动画完成
     }
   };
 
@@ -346,7 +604,11 @@ const ServicesContent = () => {
   }, []);
 
   return (
-    <div ref={containerRef} className="bg-[#f5f5f5] w-full overflow-hidden">
+    <div
+      ref={containerRef}
+      className="bg-gradient-to-b from-gray-900 to-gray-900/90 w-full overflow-hidden"
+      style={{ minHeight: "100vh" }} // 确保容器至少有一个视口高度
+    >
       <Tabs
         value={activeTab}
         onValueChange={(value) => scrollToSection(value)}
@@ -393,8 +655,36 @@ const ServicesContent = () => {
                 position: "relative",
                 overflow: "hidden",
               }}
+              onClick={() => {
+                if (activeTab !== service.id && !isScrolling) {
+                  setIsScrolling(true);
+                  setActiveTab(service.id);
+
+                  window.scrollTo({
+                    top: sectionsRef.current[index]?.offsetTop || 0,
+                    behavior: "smooth",
+                  });
+
+                  setLastScrollY(sectionsRef.current[index]?.offsetTop || 0);
+
+                  setTimeout(() => {
+                    setIsScrolling(false);
+                  }, 800);
+                }
+              }}
             >
-              <TabsContent value={service.id} className="m-0 p-0 w-full h-full">
+              <div
+                id={`content-${service.id}`}
+                className="m-0 p-0 w-full h-full"
+                style={{
+                  display: service.id === activeTab ? "block" : "none",
+                  opacity: service.id === activeTab ? 1 : 0,
+                  transition: "opacity 0.5s ease-in-out",
+                }}
+                role="tabpanel"
+                data-state={service.id === activeTab ? "active" : "inactive"}
+                data-orientation="vertical"
+              >
                 {service.isFullBanner ? (
                   // 全屏 Banner 组件
                   <div className="w-full h-full flex flex-col">
@@ -410,7 +700,9 @@ const ServicesContent = () => {
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.6, delay: 0.2 }}
-                      ></motion.div>
+                      >
+                        <GlobalPartner />
+                      </motion.div>
                     </div>
                   </div>
                 ) : service.isContactSection ? (
@@ -463,6 +755,11 @@ const ServicesContent = () => {
                     </div>
                     <Footer />
                   </div>
+                ) : service.isFullComponent ? (
+                  // 全屏组件，与GlobalPartner相同的背景色
+                  <div className="w-full h-full bg-gradient-to-b from-gray-900 to-gray-900/90 flex items-center justify-center">
+                    {service.component}
+                  </div>
                 ) : (
                   // 常规服务内容
                   <div className="container mx-auto px-4 h-full flex items-center">
@@ -510,7 +807,7 @@ const ServicesContent = () => {
                     </motion.div>
                   </div>
                 )}
-              </TabsContent>
+              </div>
             </div>
           ))}
         </div>
