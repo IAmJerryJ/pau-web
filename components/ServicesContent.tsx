@@ -9,6 +9,7 @@ import ServicesBanner from "@/components/ServicesBanner";
 import Footer from "@/components/Footer";
 import GlobalPartner from "@/components/GlobalPartner";
 import RepairService from "@/components/RepairService";
+import ManufacturingServices from "@/components/ManufacturingServices";
 
 // 服务内容数据
 interface ServiceData {
@@ -38,42 +39,9 @@ const servicesData: ServiceData[] = [
   },
   {
     id: "service-2",
-    title: "Scooter",
-    description:
-      "We offer high-quality electric scooters for sale and maintenance services, ensuring your mobility needs are met.",
-    image: "/services/service2.jpg",
-    features: [
-      "24/7 technical support",
-      "Professional repair services",
-      "Preventive maintenance plans",
-      "Remote diagnostic capabilities",
-    ],
-  },
-  {
-    id: "service-3",
-    title: "Warehousing and Logistics",
-    description:
-      "We provide complete warehousing and logistics solutions to help you efficiently manage inventory and delivery.",
-    image: "/services/service3.jpg",
-    features: [
-      "Modern warehousing facilities",
-      "Real-time inventory tracking",
-      "Global delivery network",
-      "Custom logistics solutions",
-    ],
-  },
-  {
-    id: "service-4",
-    title: "R&D",
-    description:
-      "Our R&D team is dedicated to innovation, developing cutting-edge technology solutions for our clients.",
-    image: "/services/service4.jpg",
-    features: [
-      "Professional R&D team",
-      "Latest technology applications",
-      "Custom product development",
-      "Continuous innovation process",
-    ],
+    title: "Manufacturing",
+    component: <ManufacturingServices />,
+    isFullComponent: true,
   },
   {
     id: "contact-us",

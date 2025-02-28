@@ -45,11 +45,6 @@ const GlobalPartner = () => {
               meet the needs of each of our clients and achieve the highest
               quality services in the industry.
             </p>
-            <div className="pt-4">
-              <button className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium px-6 py-3 rounded-full transition-colors">
-                Learn More
-              </button>
-            </div>
           </motion.div>
 
           {/* 右侧世界地图 */}
