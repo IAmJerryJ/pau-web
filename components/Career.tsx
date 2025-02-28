@@ -16,12 +16,11 @@ const Career = () => {
           </div>
         </div>
         <div className="w-full md:w-2/3 p-16 rounded-md">
-          <h2 className="text-3xl font-bold mb-4">Career in Pegatron</h2>
+          <h2 className="text-3xl font-bold mb-4">Our Team</h2>
           <p className="text-gray-700 text-lg">
-            To be satisfied at work means to be satisfied in life as well. We
-            consistently pay attention to a pleasant working environment and
-            intensive development of our employees thanks to a valuable
-            education system.
+            Our team is a group of dedicated professionals who are passionate
+            about what they do. We are a team of hardworking individuals who are
+            committed to providing the best possible service to our clients.
           </p>
           <button className="bg-red-500 text-white px-4 py-2 rounded-md mt-8">
             LEARN MORE

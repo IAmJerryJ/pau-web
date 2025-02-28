@@ -60,10 +60,10 @@ const Footer = () => {
                 Services
               </Link>
               <Link
-                href="/career"
+                href="/team"
                 className="text-gray-200 hover:text-white transition"
               >
-                Career
+                Team
               </Link>
               <Link
                 href="/contacts"

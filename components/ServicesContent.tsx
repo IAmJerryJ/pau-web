@@ -676,7 +676,7 @@ const ServicesContent = () => {
                 ) : service.isContactSection ? (
                   // 联系我们部分 + Footer
                   <div className="w-full h-full flex flex-col">
-                    <div className="container mx-auto px-4 flex-grow flex flex-col justify-center items-center">
+                    <div className="container mx-auto px-4 flex-grow flex flex-col justify-center items-center mt-36">
                       <motion.div
                         className="bg-white/90 backdrop-blur-sm rounded-xl shadow-xl p-6 md:p-10 max-w-4xl mx-auto text-center mb-12"
                         initial={{ opacity: 0, y: 50 }}
@@ -716,9 +716,6 @@ const ServicesContent = () => {
                             <p className="text-gray-600">+61 2 9888 9999</p>
                           </div>
                         </div>
-                        <button className="bg-primary text-white px-8 py-3 rounded-full font-medium hover:bg-primary/90 transition-colors">
-                          Contact Us
-                        </button>
                       </motion.div>
                     </div>
                     <Footer />

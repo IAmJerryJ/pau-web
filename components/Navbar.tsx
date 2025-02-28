@@ -60,14 +60,14 @@ const Navbar = () => {
             </NavigationMenuItem>
 
             <NavigationMenuItem>
-              <Link href="/career" legacyBehavior passHref>
+              <Link href="/team" legacyBehavior passHref>
                 <NavigationMenuLink
                   className={cn(
                     navigationMenuTriggerStyle(),
                     "text-white hover:text-gray-200 bg-transparent hover:bg-gray-800 text-2xl"
                   )}
                 >
-                  Career
+                  Team
                 </NavigationMenuLink>
               </Link>
             </NavigationMenuItem>
